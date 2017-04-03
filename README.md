@@ -1,8 +1,8 @@
 # Transform Sass
 
 Transform Sass is a Dart transformer for **pub serve** and **pub build** that
-uses [Dart-Sass][https://github.com/dart-league/dart-sass] for compiling
-**scss** and **sass* files into **css**. Transformer supports 'package:...'
+uses [Dart-Sass][https://github.com/sass/dart-sass] for compiling
+**scss** and **sass** files into **css**. Transformer supports 'package:...'
 imports. This transformer can handle:
 
 
