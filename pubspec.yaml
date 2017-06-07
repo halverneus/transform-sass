@@ -1,6 +1,6 @@
 name: transform_sass
 description: A Sass transformer for pub-serve and pub-build supporting 'package:' imports using Dart-Sass.
-version: 0.2.2
+version: 0.2.3
 author: Jeromy Streets <halverneus@gmail.com>
 homepage: https://github.com/halverneus/transform-sass
 
@@ -10,3 +10,5 @@ environment:
 dependencies:
   sass: ^1.0.0-beta
   barback: ^0.15.2
+  package_resolver: "^1.0.2"
+  path: "^1.4.1"
