@@ -35,7 +35,7 @@ Where the contents are as follows:
 ...
 dependencies:
   ...
-  transform_sass: '>=0.2.1'
+  transform_sass: '>=0.2.2'
 
 transformers:
   ...
@@ -74,7 +74,7 @@ Simply put, all imports work like Dart. To use the transformer, add the
 following two lines to your pubspec.yaml file:
 ```yaml
 dependencies:
-  transform_sass: '>=0.2.1'
+  transform_sass: '>=0.2.2'
 transformers:
   - transform_sass
 ```
