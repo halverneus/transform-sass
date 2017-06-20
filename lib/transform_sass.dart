@@ -86,7 +86,11 @@ class TransformSass extends bb.AggregateTransformer {
           // "/home/user/dart_projects/project/lib/"
           value = dir.parent.absolute.path + "/lib/";
         }
-        var uri = new Uri.file(value.replaceFirst("file://", ""));
+
+        if (Platform.isWindows) value = value.replaceFirst("file:///", "");
+        else value = value.replaceFirst("file://", "");
+
+        var uri = new Uri.file(value);
         // "library" : "/home/user/.pub-cache/hosted/.../lib/"
         // **or**
         // "project" : "/home/user/dart-projects/project/lib/"
