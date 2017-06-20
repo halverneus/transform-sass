@@ -1,4 +1,5 @@
 # Transform Sass
+[![Join the chat at https://gitter.im/halverneus/transform-sass](https://badges.gitter.im/halverneus/transform-sass.svg)](https://gitter.im/halverneus/transform-sass?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Transform Sass is a Dart transformer for **pub serve** and **pub build** that
 uses [Dart-Sass][https://github.com/sass/dart-sass] for compiling
