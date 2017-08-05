@@ -83,5 +83,5 @@ Afterwards, run **pub install**. Changes to the CSS in the browser only require
 refreshing the browser when running **pub serve**.
 
 ## Links
-Source code is available at: https://github.com/halverneus/transform-sass
-Pub is available at: https://pub.dartlang.org/packages/transform_sass
+* Source code is available at: https://github.com/halverneus/transform-sass
+* Pub is available at: https://pub.dartlang.org/packages/transform_sass
