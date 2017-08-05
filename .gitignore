@@ -1,0 +1,19 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Dart template
+# See https://www.dartlang.org/tools/private-files.html
+
+# Files and directories created by pub
+
+# SDK 1.20 and later (no longer creates packages directories)
+.packages
+.pub/
+build/
+
+# Directory created by dartdoc
+doc/api/
+
+pubspec.lock
+
+# IDE
+.idea/
+

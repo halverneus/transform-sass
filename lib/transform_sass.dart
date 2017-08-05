@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:barback/barback.dart' as bb;
 import 'package:package_resolver/package_resolver.dart' as pr;
-import 'package:path/path.dart' as p;
 import 'package:sass/sass.dart' as sass;
 
 /// Uses the [Dart-Sass][https://github.com/dart-league/dart-sass] compiler to
@@ -37,75 +34,34 @@ class TransformSass extends bb.AggregateTransformer {
     // compiler. Wait for both processes to complete before continuing.
     List<bb.Asset> assets;
     pr.SyncPackageResolver spr;
-    await Future.wait(
+    final responses = await Future.wait(
       [this._prepareAssets(transform), this._buildResolver()],
-    ).then((List responses) {
-      assets = responses[0] as List<bb.Asset>;
-      spr = responses[1] as pr.SyncPackageResolver;
-    });
+    );
+
+    assets = responses[0] as List<bb.Asset>;
+    spr = responses[1] as pr.SyncPackageResolver;
 
     // For each Sass endpoint (a Sass file without a leading underscore), send
     // build request to the Dart-Sass compiler.
     for (bb.Asset asset in assets) {
-      var output = new bb.Asset.fromString(asset.id.changeExtension('.css'),
-          sass.render(asset.id.toString().split("|")[1], packageResolver: spr));
+      var output = new bb.Asset.fromString(
+          asset.id.changeExtension('.css'),
+          sass.compile(asset.id.toString().split("|")[1],
+              packageResolver: spr));
       transform.addOutput(output);
     }
   }
 
   /// Read the ".packages" file and build a new [pr.SyncPackageResolver].
-  pr.SyncPackageResolver _buildResolver() async {
-    // Read all contents from the ".packages" file and divide into rows.
-    var file = new File(".packages");
-    String contents = await file.readAsString(encoding: ASCII);
-    var rows = contents.split("\n");
-    // 'resolver' is used to construct a new SyncPackageResolver after being
-    // populated.
-    Map<String, Uri> resolver = new Map<String, Uri>();
-    // Evaluate each row in the file. Content appears as:
-    // "library:file:///home/user/.pub-cache/hosted/.../lib/"
-    // **or**
-    // "project:lib/"
-    for (String row in rows) {
-      // Confirm row should be evaluated.
-      if (!row.contains("#") && row.contains(":")) {
-        // ["library","file","///home/user/.pub-cache/hosted/.../lib/"]
-        // **or**
-        // ["project", "lib/"]
-        var parts = row.split(":");
-        // "library"
-        // **or**
-        // "project"
-        String key = parts[0];
-        // "file:///home/user/.pub-cache/hosted/.../lib/"
-        // **or**
-        // "lib/"
-        String value = parts.getRange(1, parts.length).join(":");
-        if ("lib/" == value) {
-          var dir = new Directory(file.absolute.path);
-          // "/home/user/dart_projects/project/lib/"
-          value = dir.parent.absolute.path + "/lib/";
-        }
-
-        if (Platform.isWindows) value = value.replaceFirst("file:///", "");
-        else value = value.replaceFirst("file://", "");
-
-        var uri = new Uri.file(value);
-        // "library" : "/home/user/.pub-cache/hosted/.../lib/"
-        // **or**
-        // "project" : "/home/user/dart-projects/project/lib/"
-        resolver[key] = uri;
-      }
-    }
-    return new pr.SyncPackageResolver.config(resolver);
-  }
+  Future<pr.SyncPackageResolver> _buildResolver() async =>
+      pr.SyncPackageResolver.loadConfig('.packages');
 
   // Creates a list of endpoint Sass files (those without leading underscores).
-  List<Asset> _prepareAssets(bb.AggregateTransform transform) async {
+  Future _prepareAssets(bb.AggregateTransform transform) async {
     // Create a starting list of [assets] and an resulting list of endpoint
     // assets, or [rootAssets].
-    List<bb.Asset> assets = await transform.primaryInputs.toList();
-    List<bb.Asset> rootAssets = [];
+    final assets = await transform.primaryInputs.toList();
+    final rootAssets = <bb.Asset>[];
 
     // This is a filter for **sass* and **scss* file names with a leading
     // underscore. Changes "PROJ|path/to/_file.scss" into "_file.scss" and looks
