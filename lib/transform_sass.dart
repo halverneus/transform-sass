@@ -44,9 +44,24 @@ class TransformSass extends bb.AggregateTransformer {
     // For each Sass endpoint (a Sass file without a leading underscore), send
     // build request to the Dart-Sass compiler.
     for (bb.Asset asset in assets) {
+      // Extract package name and the asset's package relative URL
+      // from the asset ID.
+      final parts = asset.id.toString().split('|');
+      final packageName = parts[0];
+      final assetPackageRelativeUrl = parts[1];
+
+      // Resolve the package's URL and combine it with the asset's relative
+      // URL to ensure sass files in other packages can be compiled.
+      //
+      // e.g. pub packages specified via the `path` option. The current 
+      // working directory won't be under the package, causing other
+      // package's sass files to not be found.
+      final packageUrl = spr.packagePath(packageName);
+      final fullAssetUrl = '$packageUrl/$assetPackageRelativeUrl';
+
       var output = new bb.Asset.fromString(
           asset.id.changeExtension('.css'),
-          sass.compile(asset.id.toString().split("|")[1],
+          sass.compile(fullAssetUrl,
               packageResolver: spr));
       transform.addOutput(output);
     }
